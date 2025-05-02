@@ -7,10 +7,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
 /**
- * @title mMKTB Token
+ * @title mCONCT Token
  * @dev ERC20 token for marketplace transactions with initial 30M supply and quarterly releases
  */
-contract MMKTB is ERC20, ERC20Burnable, Ownable {
+contract MCONCT is ERC20, ERC20Burnable, Ownable {
     uint256 public constant INITIAL_SUPPLY = 30_000_000 * 10**18; // 30M tokens with 18 decimals
     uint256 public constant MAX_SUPPLY = 100_000_000 * 10**18; // 100M max supply
     uint256 public constant TREASURY_SUPPLY = 70_000_000 * 10**18; // 70M reserved for treasury
@@ -30,7 +30,7 @@ contract MMKTB is ERC20, ERC20Burnable, Ownable {
      * @param _treasuryWallet Address of the treasury wallet 
      */
     constructor(address initialOwner, address _treasuryWallet) 
-        ERC20("Marketplace Transaction Token", "mMKTB") 
+        ERC20("Coinnect Transaction Token", "mCONCT") 
         Ownable(initialOwner) 
     {
         require(_treasuryWallet != address(0), "Treasury wallet cannot be zero address");

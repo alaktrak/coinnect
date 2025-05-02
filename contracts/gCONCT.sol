@@ -7,10 +7,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
 /**
- * @title gMKTB Token
+ * @title gCONCT Token
  * @dev Governance token with a fixed supply of 20M
  */
-contract GMKTB is ERC20, ERC20Burnable, Ownable {
+contract gCONCT is ERC20, ERC20Burnable, Ownable {
     uint256 public constant MAX_SUPPLY = 20_000_000 * 10**18; // 20M total supply with 18 decimals
     
     /**
@@ -18,7 +18,7 @@ contract GMKTB is ERC20, ERC20Burnable, Ownable {
      * @param initialOwner Address of the initial owner (will receive all tokens)
      */
     constructor(address initialOwner) 
-        ERC20("Marketplace Governance Token", "gMKTB")
+        ERC20("Coinnect Governance Token", "gCONCT")
         Ownable(initialOwner) 
     {
         _mint(initialOwner, MAX_SUPPLY);
