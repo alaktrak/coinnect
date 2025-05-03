@@ -2,19 +2,16 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("mCONCT", function () {
-  let mConctContract, token, owner, treasuryWallet;
+  let mConctContract, token, owner, treasuryWallet, addr1;
 
   beforeEach(async function () {
     [owner, treasuryWallet, addr1] = await ethers.getSigners();
     
-    // Get the contract factory
     mConctContract = await ethers.getContractFactory("mCONCT");
     
-    // Deploy with required parameters: initialOwner and treasuryWallet
     token = await mConctContract.deploy(owner.address, treasuryWallet.address);
     
-    // Wait for deployment
-    await token.waitForDeployment();
+    await token.deployed(); // Ethers v5 compatible
   });
 
   it("Should have correct name and symbol", async function () {
@@ -23,7 +20,7 @@ describe("mCONCT", function () {
   });
 
   it("Should assign initial supply to owner", async function () {
-    const initialSupply = ethers.parseEther("30000000"); // 30M tokens
+    const initialSupply = ethers.utils.parseEther("30000000"); // 30M tokens
     expect(await token.balanceOf(owner.address)).to.equal(initialSupply);
   });
 
@@ -32,9 +29,9 @@ describe("mCONCT", function () {
   });
 
   it("Should have correct constants", async function () {
-    expect(await token.INITIAL_SUPPLY()).to.equal(ethers.parseEther("30000000"));
-    expect(await token.MAX_SUPPLY()).to.equal(ethers.parseEther("100000000"));
-    expect(await token.TREASURY_SUPPLY()).to.equal(ethers.parseEther("70000000"));
+    expect(await token.INITIAL_SUPPLY()).to.equal(ethers.utils.parseEther("30000000"));
+    expect(await token.MAX_SUPPLY()).to.equal(ethers.utils.parseEther("100000000"));
+    expect(await token.TREASURY_SUPPLY()).to.equal(ethers.utils.parseEther("70000000"));
   });
 
   it("Should allow owner to update treasury wallet", async function () {

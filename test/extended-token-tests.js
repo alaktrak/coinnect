@@ -39,7 +39,7 @@ describe("Token Contracts", function () {
   });
 
   it("should allow transfers between accounts", async function () {
-    const amount = ethers.parseEther("1000");
+    const amount = ethers.utils.parseEther("1000");
 
     await mconct.transfer(otherAccount.address, amount);
     await gconct.transfer(otherAccount.address, amount);
@@ -49,7 +49,7 @@ describe("Token Contracts", function () {
   });
 
   it("should emit Transfer events", async function () {
-    const amount = ethers.parseEther("1000");
+    const amount = ethers.utils.parseEther("1000");
 
     await expect(mconct.transfer(otherAccount.address, amount))
       .to.emit(mconct, "Transfer")
@@ -84,7 +84,7 @@ describe("Token Contracts", function () {
     const treasuryBalanceAfter = await mconct.balanceOf(treasuryWallet.address);
     
     // In ethers v6, we should use native BigInt operations instead of .add()
-    expect(treasuryBalanceAfter).to.equal(treasuryBalanceBefore + releasableAmount);
+    expect(treasuryBalanceAfter).to.equal(treasuryBalanceBefore.add(releasableAmount));
   });
 });
 
@@ -102,8 +102,9 @@ describe("Gas cost benchmarking", function () {
   };
 
   const toUSD = (ethCostWei, ethPriceUSD) => {
-    const ethCostEther = Number(ethCostWei) / 1e18;
-    return (ethCostEther * ethPriceUSD).toFixed(2);
+    const ethCostEther = ethers.utils.formatEther(ethCostWei); // instead of manual division
+    const usdCost = (parseFloat(ethCostEther) * ethPriceUSD).toFixed(2);
+    return usdCost
   };
 
   before(async function () {
@@ -140,7 +141,7 @@ describe("Gas cost benchmarking", function () {
   }
 
   it("benchmarks transfers with ETH & USD cost", async function () {
-    const transferAmount = ethers.parseEther("1000");
+    const transferAmount = ethers.utils.parseEther("1000");
 
     await benchmark("Transfer mCONCT", async () => 
       await mconct.transfer(otherAccount.address, transferAmount)
@@ -159,7 +160,7 @@ describe("Gas cost benchmarking", function () {
     
     // Only test if there are tokens to release
     const releasable = await mconct.availableToRelease();
-    if (releasable > 0n) {  // Use BigInt comparison
+    if (releasable.gt(0)) { // use .gt() instead of > 0n
       await benchmark("Treasury Release mCONCT", async () => 
         await mconct.releaseTreasuryTokens()
       );

@@ -1,0 +1,85 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "Tutors",
+      "category": "Academics",
+      "image": "https://lsc.cornell.edu/wp-content/uploads/2021/07/k-g-g0905-achi-39404-lyj2328-1-tutoring.jpg",
+      "price": "1",
+      "rating": 4,
+      "stock": 10
+    },
+    {
+      "id": 2,
+      "name": "Babysitters",
+      "category": "Personal",
+      "image": "https://media.istockphoto.com/id/1393418692/photo/mother-looking-at-a-child-playing-with-an-educational-didactic-toy.jpg?s=612x612&w=0&k=20&c=ccJfhc2j8xEmSzpM9l_NaMMg0woe9y5S0WhNmQzTkXU=",
+      "price": "2",
+      "rating": 5,
+      "stock": 6
+    },
+    {
+      "id": 3,
+      "name": "Dog Walkers",
+      "category": "Personal",
+      "image": "https://media.istockphoto.com/id/1749214597/photo/low-section-of-a-dog-walker-walking-with-group-of-dogs-on-their-leash-on-the-street-new-york.jpg?s=612x612&w=0&k=20&c=KzHrtB6RLk3Shz1F1za_83xl2yC3u9jrTLKdMjWlmDI=",
+      "price": "0.25",
+      "rating": 2,
+      "stock": 24
+    },
+    {
+      "id": 4,
+      "name": "Cleaning Services",
+      "category": "Personal",
+      "image": "https://media.istockphoto.com/id/1417833187/photo/professional-cleaner-vacuuming-a-carpet.jpg?s=1024x1024&w=is&k=20&c=Q7Gp-iPTWB-FhyTXpaoqITz4HDgcPaMHB8MdCFFxmSY=",
+      "price": "0.25",
+      "rating": 5,
+      "stock": 3
+    },
+    {
+      "id": 5,
+      "name": "Moving Services",
+      "category": "Personal",
+      "image": "https://media.istockphoto.com/id/928084870/photo/close-up-of-two-delivery-men-carrying-cardboard-box.jpg?s=1024x1024&w=is&k=20&c=qd3QnvnSUK3gbOY9FqxP-Fu6Pvm2LVXewYD4yryt1P4=",
+      "price": "0.10",
+      "rating": 4,
+      "stock": 12
+    },
+    {
+      "id": 6,
+      "name": "Realtors",
+      "category": "Research",
+      "image": "https://media.istockphoto.com/id/1475244437/photo/young-married-couple-talking-with-a-real-estate-agent-visiting-apartment-for-sale-or-for-rent.jpg?s=612x612&w=0&k=20&c=nQopiOp0_ayZfB_zXWMKUn9ZrHhWwBh9o6ikQlspopc=",
+      "price": "1.25",
+      "rating": 4,
+      "stock": 0
+    },
+    {
+      "id": 7,
+      "name": "Handy Man",
+      "category": "Personal",
+      "image": "https://media.istockphoto.com/id/1840366193/photo/close-up-of-repairman-in-uniform-standing-on-home-kitchen-and-holding-his-tool-bag.jpg?s=612x612&w=0&k=20&c=eJ3N5_4DeXrHF7aUaLXVThYsus86KqyMcubsq4Nclco=",
+      "price": "0.05",
+      "rating": 4,
+      "stock": 15
+    },
+    {
+      "id": 8,
+      "name": "Landscapers",
+      "category": "Personal",
+      "image": "https://media.istockphoto.com/id/1166203849/photo/garden-worker-trimming-plants.jpg?s=612x612&w=0&k=20&c=tugEqkOzdA8y35diz6ngfz4BwXx_KRPVegFLgvaUHmw=",
+      "price": "0.20",
+      "rating": 4,
+      "stock": 0
+    },
+    {
+      "id": 9,
+      "name": "Accountants",
+      "category": "Research",
+      "image": "https://media.istockphoto.com/id/1470940486/photo/professional-accountant-woman-in-office.jpg?s=612x612&w=0&k=20&c=nHeiloWOHkhE1YJ5XJeFrx24lrT0K6b-QXv6oRM_AYQ=",
+      "price": "0.15",
+      "rating": 3,
+      "stock": 12
+    }
+  ]
+}
