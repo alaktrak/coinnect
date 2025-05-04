@@ -3,7 +3,7 @@ import { ethers } from 'ethers'
 // Components
 import Rating from './Rating'
 
-const Section = ({ title, items, togglePop }) => {
+const Section = ({ title, items, togglePop, tokenSymbol = "mCONCT" }) => {
     return (
         <div className='cards__section'>
             <h3 id={title}>{title}</h3>
@@ -19,7 +19,7 @@ const Section = ({ title, items, togglePop }) => {
                         <div className='card__info'>
                             <h4>{item.name}</h4>
                             <Rating value={item.rating} />
-                            <p>{ethers.utils.formatUnits(item.cost.toString(), 'ether')} ETH</p>
+                            <p>{ethers.utils.formatUnits(item.cost.toString(), 'ether')} {tokenSymbol}</p>
                         </div>
 
                     </div>

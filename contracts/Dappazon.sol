@@ -1,10 +1,16 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-contract Dappazon {
-    // Alak's code goes here...
+// Interface for ERC20 token
+interface IERC20 {
+    function transfer(address to, uint256 amount) external returns (bool);
+    function transferFrom(address from, address to, uint256 amount) external returns (bool);
+    function balanceOf(address account) external view returns (uint256);
+}
 
+contract Dappazon {
     address public owner;
+    IERC20 public paymentToken; // mCONCT token address
 
     struct Item {
         uint256 id;
@@ -27,13 +33,23 @@ contract Dappazon {
 
     event Buy(address buyer, uint256 orderID, uint256 itemID);
     event List(string name, uint256 cost, uint256 quantity);
+    event PaymentTokenUpdated(address oldToken, address newToken);
+
     modifier onlyOwner() {
-        require (msg.sender == owner);
+        require(msg.sender == owner, "Not authorized");
         _;
     }
 
-    constructor() {
-        owner = msg.sender;    
+    constructor(address _paymentToken) {
+        owner = msg.sender;
+        paymentToken = IERC20(_paymentToken);
+    }
+
+    // Update payment token (in case you need to change it later)
+    function setPaymentToken(address _paymentToken) public onlyOwner {
+        address oldToken = address(paymentToken);
+        paymentToken = IERC20(_paymentToken);
+        emit PaymentTokenUpdated(oldToken, _paymentToken);
     }
 
     // List Products
@@ -46,10 +62,7 @@ contract Dappazon {
         uint256 _rating,
         uint256 _stock
     ) public onlyOwner {
-        require (msg.sender == owner);
-
         // Create Item Struct
-
         Item memory item = Item(
             _id,
             _name,
@@ -57,7 +70,8 @@ contract Dappazon {
             _image,
             _cost,
             _rating,
-            _stock);
+            _stock
+        );
 
         // Save Item Struct To Blockchain
         items[_id] = item;
@@ -67,16 +81,18 @@ contract Dappazon {
     }
 
     // Buy Products
-
-    function buy (uint256 _id) public payable{
+    function buy(uint256 _id) public {
         // Fetch Item
         Item memory item = items[_id];
 
-        // Require Enough Ether to Buy Item
-        require(msg.value >= item.cost);
-
         // Require Item is in stock
-        require(item.stock > 0);
+        require(item.stock > 0, "Item out of stock");
+
+        // Transfer tokens from buyer to contract
+        require(
+            paymentToken.transferFrom(msg.sender, address(this), item.cost),
+            "Payment failed"
+        );
 
         // Create an Order
         Order memory order = Order(block.timestamp, item);
@@ -92,11 +108,13 @@ contract Dappazon {
         emit Buy(msg.sender, orderCount[msg.sender], item.id);
     }
     
-    // Withdraw Funds
-
+    // Withdraw Tokens
     function withdraw() public onlyOwner {
-        (bool success, ) = owner.call{value: address(this).balance}("");
-        require(success);
+        uint256 balance = paymentToken.balanceOf(address(this));
+        require(balance > 0, "No tokens to withdraw");
+        require(
+            paymentToken.transfer(owner, balance),
+            "Withdrawal failed"
+        );
     }
-
 }

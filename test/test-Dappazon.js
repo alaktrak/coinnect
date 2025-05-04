@@ -15,15 +15,21 @@ const RATING = 4;
 const STOCK = 5;
 
 describe("Dappazon", function () {
-  let dappazon;
+  let dappazon, mCONCT, mconct;
   let deployer, buyer;
 
   beforeEach(async function () {
     [deployer, buyer] = await ethers.getSigners();
 
+    // Deploy a mock ERC20 token with required constructor arguments
+    mCONCT = await ethers.getContractFactory("mCONCT");
+    mconct = await mCONCT.deploy(deployer.address, deployer.address);
+    await mconct.deployed();
+
+    // Deploy Dappazon with the mock token's address
     const Dappazon = await ethers.getContractFactory("Dappazon");
-    dappazon = await Dappazon.deploy();
-    await dappazon.deployed(); // Ethers v5
+    dappazon = await Dappazon.deploy(mconct.address);
+    await dappazon.deployed();
   });
 
   describe("Deployment", function () {
@@ -60,10 +66,12 @@ describe("Dappazon", function () {
     });
 
     it("Emits List Event", async function () {
-      const logs = receipt.logs.map(log => dappazon.interface.parseLog(log));
-      const listEvent = logs.find(log => log.name === "List");
-      expect(listEvent).to.not.be.undefined;
-      expect(listEvent.args.name).to.equal(NAME);
+      // Find the List event directly
+      const event = receipt.events.find(event => event.event === "List");
+      expect(event).to.exist; // Using .exist instead of to.not.be.undefined
+      expect(event.args.name).to.equal(NAME);
+      expect(event.args.cost).to.equal(COST);
+      expect(event.args.quantity).to.equal(STOCK);
     });
   });
 
@@ -71,10 +79,26 @@ describe("Dappazon", function () {
     let transaction, receipt;
 
     beforeEach(async function () {
-      transaction = await dappazon.connect(deployer).list(ID, NAME, CATEGORY, IMAGE, COST, RATING, STOCK);
+      // List the item
+      transaction = await dappazon.connect(deployer).list(
+        ID, 
+        NAME, 
+        CATEGORY, 
+        IMAGE, 
+        COST, 
+        RATING, 
+        STOCK
+      );
       await transaction.wait();
 
-      transaction = await dappazon.connect(buyer).buy(ID, { value: COST });
+      // Mint some tokens to the buyer
+      await mconct.connect(deployer).transfer(buyer.address, COST);
+      
+      // Approve the Dappazon contract to spend tokens
+      await mconct.connect(buyer).approve(dappazon.address, COST);
+      
+      // Buy the item
+      transaction = await dappazon.connect(buyer).buy(ID);
       receipt = await transaction.wait();
     });
 
@@ -90,16 +114,22 @@ describe("Dappazon", function () {
     });
 
     it("Updates the Contract Balance", async function () {
-      const result = await ethers.provider.getBalance(dappazon.address); // Ethers v5
+      const result = await mconct.balanceOf(dappazon.address);
       expect(result).to.equal(COST);
     });
 
     it("Emits Buy Event", async function () {
-      const logs = receipt.logs.map(log => dappazon.interface.parseLog(log));
-      const buyEvent = logs.find(log => log.name === "Buy");
-      expect(buyEvent).to.not.be.undefined;
-      expect(buyEvent.args.buyer).to.equal(buyer.address);
-      expect(buyEvent.args.itemID).to.equal(ID);
+      // Find the Buy event directly
+      const event = receipt.events.find(event => event.event === "Buy");
+      expect(event).to.exist; // Using .exist instead of to.not.be.undefined
+      expect(event.args.buyer).to.equal(buyer.address);
+      expect(event.args.orderID).to.equal(1);
+      expect(event.args.itemID).to.equal(ID);
+    });
+
+    it("Updates the item stock", async function () {
+      const item = await dappazon.items(ID);
+      expect(item.stock).to.equal(STOCK - 1);
     });
   });
 
@@ -107,26 +137,44 @@ describe("Dappazon", function () {
     let balanceBefore, transaction, receipt;
 
     beforeEach(async function () {
-      transaction = await dappazon.connect(deployer).list(ID, NAME, CATEGORY, IMAGE, COST, RATING, STOCK);
+      // List the item
+      transaction = await dappazon.connect(deployer).list(
+        ID, 
+        NAME, 
+        CATEGORY, 
+        IMAGE, 
+        COST, 
+        RATING, 
+        STOCK
+      );
       await transaction.wait();
 
-      transaction = await dappazon.connect(buyer).buy(ID, { value: COST });
+      // Mint some tokens to the buyer
+      await mconct.connect(deployer).transfer(buyer.address, COST);
+      
+      // Approve the Dappazon contract to spend tokens
+      await mconct.connect(buyer).approve(dappazon.address, COST);
+      
+      // Buy the item
+      transaction = await dappazon.connect(buyer).buy(ID);
       await transaction.wait();
 
-      balanceBefore = await ethers.provider.getBalance(deployer.address);
+      // Get token balance before withdrawal
+      balanceBefore = await mconct.balanceOf(deployer.address);
 
+      // Withdraw tokens
       transaction = await dappazon.connect(deployer).withdraw();
       receipt = await transaction.wait();
     });
 
-    it("Updates the owner balance", async function () {
-      const balanceAfter = await ethers.provider.getBalance(deployer.address);
-      expect(balanceAfter).to.be.gt(balanceBefore);
+    it("Updates the owner token balance", async function () {
+      const balanceAfter = await mconct.balanceOf(deployer.address);
+      expect(balanceAfter).to.equal(balanceBefore.add(COST));
     });
 
-    it("Updates the contract balance", async function () {
-      const result = await ethers.provider.getBalance(dappazon.address); // Ethers v5
-      expect(result).to.equal(ethers.constants.Zero);
+    it("Updates the contract token balance", async function () {
+      const result = await mconct.balanceOf(dappazon.address);
+      expect(result).to.equal(0);
     });
   });
 });

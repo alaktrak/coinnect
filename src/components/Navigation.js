@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 
-const Navigation = ({ account, setAccount }) => {
+const Navigation = ({ account, setAccount, tokenBalance, tokenSymbol }) => {
 
     const connectHandler = async() => {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
@@ -17,15 +17,23 @@ const Navigation = ({ account, setAccount }) => {
             <input
                 type='text'
                 className="nav__search"
+                placeholder="Search services..."
             />
             
             {account ? (
-                <button
-                    type="button"
-                    className='nav__connect'
-                >
-                    {account.slice(0, 6) + '...' + account.slice(38, 42)}
-                </button>
+                <div className="nav__account">
+                    <button
+                        type="button"
+                        className='nav__connect'
+                    >
+                        {account.slice(0, 6) + '...' + account.slice(38, 42)}
+                    </button>
+                    {tokenBalance && (
+                        <span className="token__balance">
+                            {ethers.utils.formatUnits(tokenBalance.toString(), 'ether')} {tokenSymbol}
+                        </span>
+                    )}
+                </div>
             ) : (
                 <button
                     type="button"
