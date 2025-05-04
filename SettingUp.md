@@ -1,3 +1,5 @@
+````markdown
+```bash
 git clone https://github.com/alaktrak/coinnect.git
 cd coinnect
 npm install
